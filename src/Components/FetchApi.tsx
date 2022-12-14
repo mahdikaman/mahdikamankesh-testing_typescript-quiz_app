@@ -10,15 +10,18 @@ const FetchApi = () => {
   const [disable, setDisabled] = useState<boolean>();
   const [numberQuestion, setNumberQuestion] = useState<number>(0);
   const [showQuestion, setShowQuestion] = useState<boolean>(true);
-
-  const slicedMathRandomNumber = categories.sort(() => Math.random() - 0.5);
+  const [counter, setCounter] = useState(4);
 
   useEffect(() => {
     getCategories();
   }, []);
 
+  // const startTimer = () => {
+  //   counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
+  // };
+
   useEffect(() => {
-    if (categories && difficulty) {
+    if (category && difficulty) {
       const getQuestion = async () => {
         const response = await fetch(
           `https://the-trivia-api.com/api/questions?categories=${category}&limit=1&difficulty=${difficulty}`
@@ -37,7 +40,15 @@ const FetchApi = () => {
       "https://the-trivia-api.com/api/categories"
     );
     const data = await categoriResponse.json();
-    setCategories(Object.keys(data));
+    let ahmed = [];
+    for (const key in data) {
+      ahmed.push({
+        value: data[key][0],
+        lable: key,
+      });
+    }
+    console.log(ahmed);
+    setCategories(ahmed.sort(() => Math.random() - 0.5).slice(0, 3));
   };
 
   const changeDifficulty = (e: any) => {
@@ -65,39 +76,7 @@ const FetchApi = () => {
   const changeCategoryHandler = (e: any) => {
     const newElement = e.target.value;
     console.log(newElement);
-    switch (newElement) {
-      case "Arts & Literature":
-        setCategory("arts_and_literature");
-        break;
-      case "Film & TV":
-        setCategory("film_and_tv");
-        break;
-      case "Food & Drink":
-        setCategory("food_and_drink");
-        break;
-      case "General Knowledge":
-        setCategory("general_knowledge");
-        break;
-      case "Geography":
-        setCategory("geography");
-        break;
-      case "History":
-        setCategory("history");
-        break;
-      case "Music":
-        setCategory("music");
-        break;
-      case "Science":
-        setCategory("science");
-        break;
-      case "Society & Culture":
-        setCategory("society_and_culture");
-        break;
-      case "Sport & Leisure":
-        setCategory("sport_and_leisure");
-        break;
-      default:
-    }
+    setCategory(newElement);
   };
 
   const correctAnswerHandler = () => {
@@ -125,8 +104,12 @@ const FetchApi = () => {
             }}
             name={category}
           >
-            {slicedMathRandomNumber.slice(0, 3).map((items: any) => {
-              return <option key={items.id}>{items}</option>;
+            {categories.map((items: any) => {
+              return (
+                <option key={items.id} value={items.value}>
+                  {items.lable}
+                </option>
+              );
             })}
           </select>
         )}
@@ -147,11 +130,9 @@ const FetchApi = () => {
       <h5>
         Questions answered : {numberQuestion}/{questionAmount}
       </h5>
-
       {questions.slice(0, 3).map((item: any) => {
         return <p key={item.id}>{item.question}</p>;
       })}
-
       <div
         style={{
           display: "flex",
@@ -197,6 +178,7 @@ const FetchApi = () => {
         <button onClick={getQuestion}>next question</button>
       )}
       {numberQuestion === questionAmount && <button>show result</button>}
+      {!showQuestion && <p>Timer: {counter}</p>}
     </>
   );
 };
