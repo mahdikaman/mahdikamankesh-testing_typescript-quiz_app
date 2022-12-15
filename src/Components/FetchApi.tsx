@@ -38,7 +38,7 @@ const FetchApi = () => {
     if (category && difficulty) {
       const getQuestion = async () => {
         const response = await fetch(
-          `https://the-trivia-api.com/api/questions?categories=${category}&limit=1&difficulty=${difficulty}`
+          `https://the-trivia-api.com/api/questions?categories=${category}&limit=1&difficulty=${difficulty}&region=${region}`
         );
         const data = await response.json();
         setQuestions(data);
@@ -47,7 +47,7 @@ const FetchApi = () => {
       };
       getQuestion();
     }
-  }, [category, difficulty, categories]);
+  }, [category, difficulty, categories, region]);
 
   const getCategories = async () => {
     const categoriResponse = await fetch(
