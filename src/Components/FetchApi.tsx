@@ -7,7 +7,7 @@ const FetchApi = () => {
   const [categories, setCategories] = useState<any>([]);
   const [category, setCategory] = useState<string>("");
   const [difficulty, setDifficulty] = useState<string>("");
-  const [correct, setCorrect] = useState<boolean>(false);
+  const [showButton, setShowButton] = useState<boolean>(true);
   const [disable, setDisabled] = useState<boolean>();
   const [numberQuestion, setNumberQuestion] = useState<number>(0);
   const [showQuestion, setShowQuestion] = useState<boolean>(true);
@@ -15,7 +15,11 @@ const FetchApi = () => {
   const [startTimer, setStartTimer] = useState<boolean>(false);
   const [showPage, setShowPage] = useState<boolean>(false);
   const [region, setRegion] = useState<string>("US");
-  const [showStart, setShowStart] = useState<string>("inline-block");
+  const [showCategory, setShowCategory] = useState<boolean>(true);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   useEffect(() => {
     if (startTimer) {
@@ -31,10 +35,6 @@ const FetchApi = () => {
   }, [startTimer, counter]);
 
   useEffect(() => {
-    getCategories();
-  }, []);
-
-  useEffect(() => {
     if (category && difficulty) {
       const getQuestion = async () => {
         const response = await fetch(
@@ -42,7 +42,9 @@ const FetchApi = () => {
         );
         const data = await response.json();
         setQuestions(data);
+        setCounter(questionTimer);
         setShowQuestion(false);
+        setShowCategory(false);
         console.log(data);
       };
       getQuestion();
@@ -64,6 +66,7 @@ const FetchApi = () => {
     }
     console.log(ahmed);
     setCategories(ahmed.sort(() => Math.random() - 0.5).slice(0, 3));
+    setCounter(questionTimer);
   };
 
   const getQuestion = async () => {
@@ -71,15 +74,16 @@ const FetchApi = () => {
       `https://the-trivia-api.com/api/questions?categories=${category}&limit=1&difficulty=${difficulty}&region=${region}`
     );
     const data = await response.json();
-    setQuestions(data);
-    setDisabled(false);
-    setShowQuestion(false);
     if (numberQuestion === questionAmount) {
       console.log("done");
     }
     console.log(data);
     setCounter(questionTimer);
+    setShowCategory(false);
     setStartTimer(true);
+    setQuestions(data);
+    setDisabled(false);
+    setShowQuestion(false);
   };
 
   const changeDifficulty = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -96,6 +100,9 @@ const FetchApi = () => {
     console.log(newElement);
     setDisabled(false);
     setCategory(newElement);
+    setShowCategory(true);
+    setCounter(questionTimer);
+    setShowQuestion(true);
   };
 
   const changeRegion = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -105,28 +112,26 @@ const FetchApi = () => {
 
   const correctAnswerHandler = () => {
     setDisabled(true);
-    setCorrect(true);
     setNumberQuestion((prev) => prev + 1);
-    setShowQuestion(true);
+    setShowCategory(true);
     setStartTimer(false);
   };
   const falseAnswerHandler = () => {
     setDisabled(true);
-    setCorrect(false);
     setNumberQuestion((prev) => prev + 1);
     setStartTimer(false);
-    setShowQuestion(false);
-    setShowStart("none");
+    setShowQuestion(true);
   };
   const startButton = () => {
     setShowPage(true);
     setStartTimer(true);
+    setShowButton(false);
   };
 
   return (
     <>
-      <div>
-        {showQuestion && (
+      <div className="">
+        {showCategory && (
           <select
             onChange={(e) => {
               changeCategoryHandler(e);
@@ -142,7 +147,7 @@ const FetchApi = () => {
             })}
           </select>
         )}
-        {!difficulty && (
+        {!difficulty && region && (
           <select
             onChange={(e) => {
               changeDifficulty(e);
@@ -156,7 +161,7 @@ const FetchApi = () => {
             <option value="random">random</option>
           </select>
         )}
-        {region && (
+        {region && !difficulty && (
           <select
             onChange={(e) => {
               changeRegion(e);
@@ -169,11 +174,7 @@ const FetchApi = () => {
           </select>
         )}
       </div>
-      {!showQuestion && !startTimer && (
-        <button onClick={startButton} style={{ display: `${showStart}` }}>
-          Start
-        </button>
-      )}
+      {showButton && <button onClick={startButton}>Start</button>}
       {showPage && (
         <div>
           {!showQuestion && (
