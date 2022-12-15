@@ -147,7 +147,7 @@ const FetchApi = () => {
             })}
           </select>
         )}
-        {!difficulty && region && (
+        {!difficulty && (
           <select
             onChange={(e) => {
               changeDifficulty(e);
@@ -161,7 +161,7 @@ const FetchApi = () => {
             <option value="random">random</option>
           </select>
         )}
-        {region && !difficulty && (
+        {!difficulty && (
           <select
             onChange={(e) => {
               changeRegion(e);
@@ -174,7 +174,11 @@ const FetchApi = () => {
           </select>
         )}
       </div>
-      {showButton && <button onClick={startButton}>Start</button>}
+      {showButton && (
+        <button onClick={startButton} disabled={!difficulty}>
+          Start
+        </button>
+      )}
       {showPage && (
         <div>
           {!showQuestion && (
@@ -236,7 +240,7 @@ const FetchApi = () => {
             <button onClick={getQuestion}>next question</button>
           )}
           {numberQuestion === questionAmount && <button>show result</button>}
-          {!showQuestion && <p>Timer: {counter}</p>}
+          <p>Timer: {counter}</p>
         </div>
       )}
     </>
