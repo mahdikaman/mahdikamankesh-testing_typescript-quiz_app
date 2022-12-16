@@ -16,12 +16,16 @@ const Home = (props: any) => {
   };
 
   return (
-    <>
+    <div className="entered-name">
       {nameInput}
-      <h1>Put in your name</h1>
-      <input type="text" ref={name} />
-      <button onClick={setNameHandler}>next</button>
-    </>
+      <div className="input-field">
+        <h1>Skriv ditt namn</h1>
+        <input type="text" ref={name} />
+      </div>
+      <button className="btn" onClick={setNameHandler}>
+        next
+      </button>
+    </div>
   );
 };
 export default Home;

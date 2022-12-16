@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { questionAmount } from "../config";
 import { questionTimer } from "../config";
+import { nextQuestionTimer } from "../config";
 
 const FetchApi = () => {
   const [questions, setQuestions] = useState<any>([]);
   const [categories, setCategories] = useState<any>([]);
   const [category, setCategory] = useState<string>("");
   const [difficulty, setDifficulty] = useState<string>("");
-  const [showButton, setShowButton] = useState<boolean>(true);
+  const [showStartButton, setShowStartButton] = useState<boolean>(true);
   const [disable, setDisabled] = useState<boolean>();
   const [numberQuestion, setNumberQuestion] = useState<number>(0);
   const [showQuestion, setShowQuestion] = useState<boolean>(true);
-  const [counter, setCounter] = useState(questionTimer);
+  const [counter, setCounter] = useState(nextQuestionTimer);
   const [startTimer, setStartTimer] = useState<boolean>(false);
   const [showPage, setShowPage] = useState<boolean>(false);
   const [region, setRegion] = useState<string>("US");
   const [showCategory, setShowCategory] = useState<boolean>(true);
+  const [startNextQuestion, setStartNextQuestion] = useState<boolean>(false);
 
   useEffect(() => {
     getCategories();
@@ -28,11 +30,12 @@ const FetchApi = () => {
       }, 1000);
       console.log(counter);
       if (counter === 0) {
-        falseAnswerHandler();
         clearTimeout(hej);
+        setStartNextQuestion(!startNextQuestion);
+        setCounter(questionTimer);
       }
     }
-  }, [startTimer, counter]);
+  }, [startTimer, counter, startNextQuestion]);
 
   useEffect(() => {
     if (category && difficulty) {
@@ -42,7 +45,6 @@ const FetchApi = () => {
         );
         const data = await response.json();
         setQuestions(data);
-        setCounter(questionTimer);
         setShowQuestion(false);
         setShowCategory(false);
         console.log(data);
@@ -66,7 +68,6 @@ const FetchApi = () => {
     }
     console.log(ahmed);
     setCategories(ahmed.sort(() => Math.random() - 0.5).slice(0, 3));
-    setCounter(questionTimer);
   };
 
   const getQuestion = async () => {
@@ -98,14 +99,16 @@ const FetchApi = () => {
   const changeCategoryHandler = (e: any) => {
     const newElement = e.target.value;
     console.log(newElement);
+    if (!showStartButton) {
+      setStartNextQuestion(true);
+      setCounter(nextQuestionTimer);
+      setStartTimer(true);
+      setShowPage(true);
+      setShowQuestion(true);
+    }
     setDisabled(false);
     setCategory(newElement);
     setShowCategory(false);
-    setCounter(questionTimer);
-    setShowQuestion(true);
-    if (!showButton) {
-      setStartTimer(true);
-    }
   };
 
   const changeRegion = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -128,11 +131,13 @@ const FetchApi = () => {
   const startButton = () => {
     setShowPage(true);
     setStartTimer(true);
-    setShowButton(false);
+    setShowStartButton(false);
+    setStartNextQuestion(true);
+    setCounter(nextQuestionTimer);
   };
 
   return (
-    <div className="App">
+    <div>
       <div>
         {showCategory && (
           <select
@@ -177,7 +182,7 @@ const FetchApi = () => {
           </select>
         )}
       </div>
-      {showButton && (
+      {showStartButton && (
         <button
           className="btn"
           onClick={startButton}
@@ -186,7 +191,7 @@ const FetchApi = () => {
           Start
         </button>
       )}
-      {showPage && (
+      {showPage && !startNextQuestion && (
         <div>
           {!showQuestion && (
             <h3>
@@ -256,6 +261,7 @@ const FetchApi = () => {
           <p>Timer: {counter}</p>
         </div>
       )}
+      {startNextQuestion && <p>Timer: {counter}</p>}
     </div>
   );
 };
