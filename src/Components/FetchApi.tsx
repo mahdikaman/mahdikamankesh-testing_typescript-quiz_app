@@ -49,7 +49,7 @@ const FetchApi = () => {
       };
       getQuestion();
     }
-  }, [category, difficulty, categories, region]);
+  }, [category, difficulty, region]);
 
   const getCategories = async () => {
     const categoriResponse = await fetch(
@@ -100,9 +100,12 @@ const FetchApi = () => {
     console.log(newElement);
     setDisabled(false);
     setCategory(newElement);
-    setShowCategory(true);
+    setShowCategory(false);
     setCounter(questionTimer);
     setShowQuestion(true);
+    if (!showButton) {
+      setStartTimer(true);
+    }
   };
 
   const changeRegion = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -129,8 +132,8 @@ const FetchApi = () => {
   };
 
   return (
-    <>
-      <div className="">
+    <div className="App">
+      <div>
         {showCategory && (
           <select
             onChange={(e) => {
@@ -175,7 +178,11 @@ const FetchApi = () => {
         )}
       </div>
       {showButton && (
-        <button onClick={startButton} disabled={!difficulty}>
+        <button
+          className="btn"
+          onClick={startButton}
+          disabled={!difficulty && showQuestion}
+        >
           Start
         </button>
       )}
@@ -203,6 +210,7 @@ const FetchApi = () => {
               return (
                 <button
                   onClick={correctAnswerHandler}
+                  className="btn"
                   key={item.id}
                   style={{
                     backgroundColor: disable === true ? "green " : "",
@@ -220,6 +228,7 @@ const FetchApi = () => {
                   {item.incorrectAnswers.map((e: any) => {
                     return (
                       <button
+                        className="btn"
                         onClick={falseAnswerHandler}
                         style={{
                           backgroundColor:
@@ -237,13 +246,17 @@ const FetchApi = () => {
             })}
           </div>
           {disable && numberQuestion !== questionAmount && (
-            <button onClick={getQuestion}>next question</button>
+            <button className="btn" onClick={getQuestion}>
+              next question
+            </button>
           )}
-          {numberQuestion === questionAmount && <button>show result</button>}
+          {numberQuestion === questionAmount && (
+            <button className="btn">show result</button>
+          )}
           <p>Timer: {counter}</p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 export default FetchApi;
