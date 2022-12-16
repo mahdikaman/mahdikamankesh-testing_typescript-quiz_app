@@ -12,7 +12,7 @@ const FetchApi = () => {
   const [disable, setDisabled] = useState<boolean>();
   const [numberQuestion, setNumberQuestion] = useState<number>(0);
   const [showQuestion, setShowQuestion] = useState<boolean>(true);
-  const [counter, setCounter] = useState(nextQuestionTimer);
+  const [counter, setCounter] = useState<number>(nextQuestionTimer);
   const [startTimer, setStartTimer] = useState<boolean>(false);
   const [showPage, setShowPage] = useState<boolean>(false);
   const [region, setRegion] = useState<string>("US");
@@ -135,6 +135,13 @@ const FetchApi = () => {
     setStartNextQuestion(true);
     setCounter(nextQuestionTimer);
   };
+  const activateStartButton = () => {
+    if (category && difficulty) {
+      return false;
+    } else {
+      return true;
+    }
+  };
 
   return (
     <div>
@@ -186,7 +193,7 @@ const FetchApi = () => {
         <button
           className="btn"
           onClick={startButton}
-          disabled={!difficulty && showQuestion}
+          disabled={activateStartButton()}
         >
           Start
         </button>
