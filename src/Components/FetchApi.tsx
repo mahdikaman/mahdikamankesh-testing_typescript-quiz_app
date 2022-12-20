@@ -18,6 +18,9 @@ const FetchApi = () => {
   const [region, setRegion] = useState<string>("US");
   const [showCategory, setShowCategory] = useState<boolean>(true);
   const [startNextQuestion, setStartNextQuestion] = useState<boolean>(false);
+  const [difficultyScore, setDifficultyScore] = useState<number>(0);
+  const [correctAnswer, setCorrectAnswer] = useState<number>(0);
+  const [showResult, setShowResult] = useState<number>(0);
 
   useEffect(() => {
     getCategories();
@@ -47,6 +50,7 @@ const FetchApi = () => {
         setQuestions(data);
         setShowQuestion(false);
         setShowCategory(false);
+
         console.log(data);
       };
       getQuestion();
@@ -93,6 +97,14 @@ const FetchApi = () => {
       targetEl = "easy";
     }
     setDifficulty(targetEl);
+    if (targetEl === "easy" || targetEl === "random") {
+      setDifficultyScore(1);
+    } else if (targetEl === "medium") {
+      setDifficultyScore(3);
+    } else {
+      setDifficultyScore(5);
+    }
+
     console.log(targetEl);
   };
 
@@ -117,17 +129,22 @@ const FetchApi = () => {
   };
 
   const correctAnswerHandler = () => {
+    setCorrectAnswer((prev) => prev + 1);
     setDisabled(true);
     setNumberQuestion((prev) => prev + 1);
     setShowCategory(true);
     setStartTimer(false);
+    setShowResult((prev) => prev + counter * difficultyScore + correctAnswer);
   };
+
   const falseAnswerHandler = () => {
     setDisabled(true);
     setNumberQuestion((prev) => prev + 1);
     setStartTimer(false);
     setShowQuestion(true);
+    setShowResult((prev) => prev + counter * difficultyScore);
   };
+
   const startButton = () => {
     setShowPage(true);
     setStartTimer(true);
@@ -142,6 +159,11 @@ const FetchApi = () => {
       return true;
     }
   };
+
+  // const showResultHandler = () => {
+  //   setShowResults(counter * difficultyScore + correctAnswer);
+  //   setShowResult(true);
+  // };
 
   return (
     <div>
@@ -269,6 +291,7 @@ const FetchApi = () => {
         </div>
       )}
       {startNextQuestion && <p>Timer: {counter}</p>}
+      {disable && numberQuestion !== questionAmount && <p>{showResult}</p>}
     </div>
   );
 };
