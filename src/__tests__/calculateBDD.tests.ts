@@ -1,70 +1,64 @@
 import { loadFeature, defineFeature } from "jest-cucumber";
-import { Categories } from "../../components/TriviaFetch";
-import { Difficulties } from "../../utilities/quizConfig";
+import { Categories } from "../components/TriviaFetch";
+import { Difficulties } from "../utilities/quizConfig";
+import { expect } from "@jest/globals";
+
 const feature = loadFeature("./specs/features/Category.feature");
 
-export function getCategory(category: string): Categories {
-  let value = (Categories as any)[category] as Categories;
+function getCategory(category: string): Categories {
+  const value = (Categories as any)[category] as Categories;
   if (value === undefined) {
-    throw new Error(`Incorrect Value`);
+    throw new Error(`Invalid category: ${category}`);
   }
   return value;
 }
 
 defineFeature(feature, (test) => {
-  let getResult: Categories;
+  let chosenCategory: Categories;
 
   test("Choose category", ({ given, when, then }) => {
-    given(/^c: ([a-zA-Z]+)$/, (c) => {
-      getResult = getCategory(c);
+    given(/^c: ([a-zA-Z]+)$/, (categoryName) => {
+      chosenCategory = getCategory(categoryName);
     });
 
-    when("Picking a category", () => {
-      Object.keys(Difficulties).map((ExistingCategory) => {
-        if (getResult === ExistingCategory) {
-          console.log(getResult === ExistingCategory);
-        }
-      });
+    when("picking a category", () => {
+      // do some action to pick a category
+      // (not sure what the implementation should be based on the current code)
     });
 
-    then(/^The picked category should be: ([a-zA-Z]+)$/, (expected) => {
-      let result = getCategory(expected);
-      console.log(result, getResult);
-      expect(getResult).toBe(result);
+    then(/^the picked category should be: ([a-zA-Z]+)$/, (expectedCategoryName) => {
+      const expectedCategory = getCategory(expectedCategoryName);
+      expect(chosenCategory).toBe(expectedCategory);
     });
   });
 });
 
 const feature2 = loadFeature("./specs/features/Difficulty.feature");
 
-export function getDifficulty(difficulty: string): Difficulties {
-  let value = (Difficulties as any)[difficulty] as Difficulties;
+function getDifficulty(difficulty: string): Difficulties {
+  const value = (Difficulties as any)[difficulty] as Difficulties;
   if (value === undefined) {
-    throw new Error(`Incorrect Value`);
+    throw new Error(`Invalid difficulty: ${difficulty}`);
   }
   return value;
 }
 
 defineFeature(feature2, (test) => {
-  let expectedResult: Difficulties;
+  let chosenDifficulty: Difficulties;
 
   test("Choose difficulty", ({ given, when, then }) => {
-    given(/^d: ([a-zA-Z]+)$/, (d) => {
-      expectedResult = getDifficulty(d);
+    given(/^d: ([a-zA-Z]+)$/, (difficultyName) => {
+      chosenDifficulty = getDifficulty(difficultyName);
     });
 
-    when("Picking a difficulty", () => {
-      Object.keys(Difficulties).map((ExistingDifficulty) => {
-        if (expectedResult === ExistingDifficulty) {
-          console.log(expectedResult === ExistingDifficulty);
-        }
-      });
+    when("picking a difficulty", () => {
+      // do some action to pick a difficulty
+      // (not sure what the implementation should be based on the current code)
     });
 
-    then(/^The picked difficulty should be: ([a-zA-Z]+)$/, (expected) => {
-      let result = getDifficulty(expected);
-      console.log(result, expectedResult);
-      expect(expectedResult).toBe(result);
+    then(/^the picked difficulty should be: ([a-zA-Z]+)$/, (expectedDifficultyName) => {
+      const expectedDifficulty = getDifficulty(expectedDifficultyName);
+      expect(chosenDifficulty).toBe(expectedDifficulty);
     });
   });
 });
